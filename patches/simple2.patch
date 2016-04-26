@@ -1,0 +1,12 @@
+diff --git a/xen/arch/x86/acpi/cpu_idle.c b/xen/arch/x86/acpi/cpu_idle.c
+index 15fe2e9..994ff67 100644
+--- a/xen/arch/x86/acpi/cpu_idle.c
++++ b/xen/arch/x86/acpi/cpu_idle.c
+@@ -329,6 +329,7 @@ static void dump_cx(unsigned char key)
+     unsigned int cpu;
+ 
+     printk("'%c' pressed -> printing ACPI Cx structures\n", key);
++    printk("replace test\n");
+     for_each_online_cpu ( cpu )
+         if (processor_powers[cpu])
+             print_acpi_power(cpu, processor_powers[cpu]);

@@ -1,0 +1,19 @@
+diff --git a/xen/common/keyhandler.c b/xen/common/keyhandler.c
+index 5d21e48..3a974b4 100644
+--- a/xen/common/keyhandler.c
++++ b/xen/common/keyhandler.c
+@@ -62,8 +62,12 @@ void register_keyhandler(unsigned char key, struct keyhandler *handler)
+ 
+ static void show_handlers(unsigned char key)
+ {
+-    int i;
+-    printk("'%c' pressed -> showing installed handlers\n", key);
++    int i, ret;
++    printk("'%c' wrmsr pressed -> showing installed handlers\n", key);
++
++    ret = wrmsr_safe(0xFFAABB, 12344);
++    printk("ret = %d\n", ret);
++
+     for ( i = 0; i < ARRAY_SIZE(key_table); i++ ) 
+         if ( key_table[i] != NULL ) 
+             printk(" key '%c' (ascii '%02x') => %s\n", 

@@ -1,0 +1,12 @@
+diff --git a/xen/common/keyhandler.c b/xen/common/keyhandler.c
+index 5d21e48..2087332 100644
+--- a/xen/common/keyhandler.c
++++ b/xen/common/keyhandler.c
+@@ -64,6 +64,7 @@ static void show_handlers(unsigned char key)
+ {
+     int i;
+     printk("'%c' pressed -> showing installed handlers\n", key);
++    printk("'%c' PrEsSeD -> sHoWiNg installed handlers\n", key);
+     for ( i = 0; i < ARRAY_SIZE(key_table); i++ ) 
+         if ( key_table[i] != NULL ) 
+             printk(" key '%c' (ascii '%02x') => %s\n", 

@@ -1,0 +1,18 @@
+diff --git a/xen/common/keyhandler.c b/xen/common/keyhandler.c
+index 2b5ac00..c8562e3 100644
+--- a/xen/common/keyhandler.c
++++ b/xen/common/keyhandler.c
+@@ -62,11 +62,13 @@ void register_keyhandler(unsigned char key, struct keyhandler *handler)
+ 
+ void new_global(void)
+ {
++    printk("patching new_global\n");
+     WARN();
+ }
+ 
+ static void noinline new_static(void)
+ {
++    printk("patching new_static\n");
+     get_random();
+ }
+ 

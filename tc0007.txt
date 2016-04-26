@@ -1,0 +1,2 @@
+dup-rodata x
+dup-rodata2 x

@@ -1,0 +1,48 @@
+diff --git a/xen/common/keyhandler.c b/xen/common/keyhandler.c
+index 5d21e48..2b5ac00 100644
+--- a/xen/common/keyhandler.c
++++ b/xen/common/keyhandler.c
+@@ -60,10 +60,21 @@ void register_keyhandler(unsigned char key, struct keyhandler *handler)
+     key_table[key] = handler;
+ }
+ 
++void new_global(void)
++{
++    WARN();
++}
++
++static void noinline new_static(void)
++{
++    get_random();
++}
++
+ static void show_handlers(unsigned char key)
+ {
+     int i;
+     printk("'%c' pressed -> showing installed handlers\n", key);
++    new_static();
+     for ( i = 0; i < ARRAY_SIZE(key_table); i++ ) 
+         if ( key_table[i] != NULL ) 
+             printk(" key '%c' (ascii '%02x') => %s\n", 
+diff --git a/xen/common/random.c b/xen/common/random.c
+index fb805b0..79ece82 100644
+--- a/xen/common/random.c
++++ b/xen/common/random.c
+@@ -8,6 +8,8 @@
+ static DEFINE_PER_CPU(unsigned int, seed);
+ unsigned int __read_mostly boot_random;
+ 
++void new_global(void);
++
+ unsigned int get_random(void)
+ {
+     unsigned int next = this_cpu(seed), val = arch_get_random();
+@@ -28,6 +30,8 @@ unsigned int get_random(void)
+ 
+     this_cpu(seed) = next;
+ 
++    new_global();
++
+     return val;
+ }
+ 

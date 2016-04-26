@@ -1,0 +1,28 @@
+diff --git a/xen/arch/x86/acpi/cpu_idle.c b/xen/arch/x86/acpi/cpu_idle.c
+index 15fe2e9..6ecb17c 100644
+--- a/xen/arch/x86/acpi/cpu_idle.c
++++ b/xen/arch/x86/acpi/cpu_idle.c
+@@ -324,11 +324,23 @@ static void print_acpi_power(uint32_t cpu, struct acpi_processor_power *power)
+     print_hw_residencies(cpu);
+ }
+ 
++extern int global_x;
++extern char global_y[8192];
++extern int global_z;
++
+ static void dump_cx(unsigned char key)
+ {
+     unsigned int cpu;
+ 
+     printk("'%c' pressed -> printing ACPI Cx structures\n", key);
++    printk("global_x = %d\n", global_x);
++    printk("global_y = %d\n", global_y[544]);
++    printk("global_z = %d\n", global_z);
++
++    global_x++;
++    global_y[544]++;
++    global_z++;
++
+     for_each_online_cpu ( cpu )
+         if (processor_powers[cpu])
+             print_acpi_power(cpu, processor_powers[cpu]);

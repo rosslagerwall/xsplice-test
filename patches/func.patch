@@ -1,0 +1,52 @@
+diff --git a/xen/common/keyhandler.c b/xen/common/keyhandler.c
+index 5d21e48..1f61b6c 100644
+--- a/xen/common/keyhandler.c
++++ b/xen/common/keyhandler.c
+@@ -60,10 +60,24 @@ void register_keyhandler(unsigned char key, struct keyhandler *handler)
+     key_table[key] = handler;
+ }
+ 
++void noinline new_global_func(int argc)
++{
++    printk("called new_global_func %d\n", argc);
++}
++
++static void noinline new_static_func(int argc)
++{
++    printk("called new_static_func %d\n", argc);
++}
++
+ static void show_handlers(unsigned char key)
+ {
+     int i;
+     printk("'%c' pressed -> showing installed handlers\n", key);
++    printk("patching existing static\n");
++    new_static_func(56);
++    new_global_func(67);
++    get_random();
+     for ( i = 0; i < ARRAY_SIZE(key_table); i++ ) 
+         if ( key_table[i] != NULL ) 
+             printk(" key '%c' (ascii '%02x') => %s\n", 
+diff --git a/xen/common/random.c b/xen/common/random.c
+index fb805b0..0d642ec 100644
+--- a/xen/common/random.c
++++ b/xen/common/random.c
+@@ -8,6 +8,8 @@
+ static DEFINE_PER_CPU(unsigned int, seed);
+ unsigned int __read_mostly boot_random;
+ 
++void new_global_func(int argc);
++
+ unsigned int get_random(void)
+ {
+     unsigned int next = this_cpu(seed), val = arch_get_random();
+@@ -28,6 +30,9 @@ unsigned int get_random(void)
+ 
+     this_cpu(seed) = next;
+ 
++    printk("patching %s\n", __func__);
++    new_global_func(70);
++
+     return val;
+ }
+ 
