@@ -19,9 +19,10 @@ class Testcase(xsplicetest._Testcase):
         self.record_log()
         self.load("func")
         self.runcmd("xl debug-key h")
+        # Requires a debug hv
+        self.assert_log("new symbol keyhandler.c#new_static_func")
         self.assert_log("overriding symbol keyhandler.c#show_handlers")
         self.assert_log("overriding symbol get_random")
-        self.assert_log("new symbol keyhandler.c#new_static_func")
         self.assert_log("new symbol new_global_func")
 
         self.assert_log("patching existing static")
@@ -34,9 +35,10 @@ class Testcase(xsplicetest._Testcase):
         self.record_log()
         self.load("func2")
         self.runcmd("xl debug-key h")
+        # Requires a debug hv
+        self.assert_log("overriding symbol keyhandler.c#new_static_func")
         self.assert_log("overriding symbol keyhandler.c#show_handlers")
         self.assert_log("overriding symbol get_random")
-        self.assert_log("overriding symbol keyhandler.c#new_static_func")
         self.assert_log("overriding symbol new_global_func")
 
         self.assert_log("repatching existing static")

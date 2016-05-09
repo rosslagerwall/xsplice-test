@@ -1,8 +1,8 @@
 diff --git a/xen/common/keyhandler.c b/xen/common/keyhandler.c
-index 2a847bd..9a78357 100644
+index 873911f..654a1ea 100644
 --- a/xen/common/keyhandler.c
 +++ b/xen/common/keyhandler.c
-@@ -95,10 +95,10 @@ static void show_handlers(unsigned char key)
+@@ -160,10 +160,10 @@ static void show_handlers(unsigned char key)
      if ( found )
          printk("static_y != 0\n");
  
@@ -15,5 +15,5 @@ index 2a847bd..9a78357 100644
 +    static_x -= 7;
 +    static_z -= 7;
  
-     for ( i = 0; i < ARRAY_SIZE(key_table); i++ ) 
-         if ( key_table[i] != NULL ) 
+     for ( i = 0; i < ARRAY_SIZE(key_table); i++ )
+         if ( key_table[i].fn )

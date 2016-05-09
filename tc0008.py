@@ -36,7 +36,6 @@ class Testcase(xsplicetest._Testcase):
         self.check_first()
 
         self.do_upload("simple2")
-        self.do_check("simple2")
         self.do_replace("simple2")
         assert self.get_status("simple")[0] == 'CHECKED'
         self.check_second()

@@ -1,8 +1,8 @@
 diff --git a/xen/common/keyhandler.c b/xen/common/keyhandler.c
-index 2b5ac00..c8562e3 100644
+index e4e79f4..77ee4fb 100644
 --- a/xen/common/keyhandler.c
 +++ b/xen/common/keyhandler.c
-@@ -62,11 +62,13 @@ void register_keyhandler(unsigned char key, struct keyhandler *handler)
+@@ -126,11 +126,13 @@ void register_irq_keyhandler(unsigned char key, irq_keyhandler_fn_t fn,
  
  void new_global(void)
  {

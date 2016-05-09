@@ -1,5 +1,5 @@
 diff --git a/xen/arch/x86/acpi/cpu_idle.c b/xen/arch/x86/acpi/cpu_idle.c
-index 15fe2e9..4263bd5 100644
+index a21aeed..a1eecec 100644
 --- a/xen/arch/x86/acpi/cpu_idle.c
 +++ b/xen/arch/x86/acpi/cpu_idle.c
 @@ -329,9 +329,14 @@ static void dump_cx(unsigned char key)
@@ -17,4 +17,4 @@ index 15fe2e9..4263bd5 100644
 +    printk("got here\n");
  }
  
- static struct keyhandler dump_cx_keyhandler = {
+ static int __init cpu_idle_key_init(void)

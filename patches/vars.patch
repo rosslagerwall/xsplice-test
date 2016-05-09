@@ -1,9 +1,32 @@
+diff --git a/xen/arch/x86/time.c b/xen/arch/x86/time.c
+index 687e39b..061c72e 100644
+--- a/xen/arch/x86/time.c
++++ b/xen/arch/x86/time.c
+@@ -1921,12 +1921,18 @@ void tsc_set_info(struct domain *d,
+     }
+ }
+ 
++extern int global_x;
++extern int global_z;
++
+ /* vtsc may incur measurable performance degradation, diagnose with this */
+ static void dump_softtsc(unsigned char key)
+ {
+     struct domain *d;
+     int domcnt = 0;
+ 
++    printk("global_x = %d\n", global_x);
++    printk("global_z = %d\n", global_z);
++
+     tsc_check_reliability();
+     if ( boot_cpu_has(X86_FEATURE_TSC_RELIABLE) )
+         printk("TSC marked as reliable, "
 diff --git a/xen/common/keyhandler.c b/xen/common/keyhandler.c
-index 5d21e48..4949386 100644
+index 4ff90f6..873911f 100644
 --- a/xen/common/keyhandler.c
 +++ b/xen/common/keyhandler.c
-@@ -60,10 +60,46 @@ void register_keyhandler(unsigned char key, struct keyhandler *handler)
-     key_table[key] = handler;
+@@ -124,11 +124,47 @@ void register_irq_keyhandler(unsigned char key, irq_keyhandler_fn_t fn,
+     key_table[key].diagnostic = diagnostic;
  }
  
 +int global_x;
@@ -15,8 +38,9 @@ index 5d21e48..4949386 100644
 +
  static void show_handlers(unsigned char key)
  {
-     int i;
+     unsigned int i;
 +    int found = 0;
+ 
      printk("'%c' pressed -> showing installed handlers\n", key);
 +
 +    printk("global_x = %d\n", global_x);
@@ -46,29 +70,6 @@ index 5d21e48..4949386 100644
 +    static_x++;
 +    static_z++;
 +
-     for ( i = 0; i < ARRAY_SIZE(key_table); i++ ) 
-         if ( key_table[i] != NULL ) 
-             printk(" key '%c' (ascii '%02x') => %s\n", 
-diff --git a/xen/arch/x86/time.c b/xen/arch/x86/time.c
-index e0fa1bd..ff12622 100644
---- a/xen/arch/x86/time.c
-+++ b/xen/arch/x86/time.c
-@@ -1993,12 +1993,18 @@ void tsc_set_info(struct domain *d,
-     }
- }
- 
-+extern int global_x;
-+extern int global_z;
-+
- /* vtsc may incur measurable performance degradation, diagnose with this */
- static void dump_softtsc(unsigned char key)
- {
-     struct domain *d;
-     int domcnt = 0;
- 
-+    printk("global_x = %d\n", global_x);
-+    printk("global_z = %d\n", global_z);
-+
-     tsc_check_reliability();
-     if ( boot_cpu_has(X86_FEATURE_TSC_RELIABLE) )
-         printk("TSC marked as reliable, "
+     for ( i = 0; i < ARRAY_SIZE(key_table); i++ )
+         if ( key_table[i].fn )
+             printk(" key '%c' (ascii '%02x') => %s\n",

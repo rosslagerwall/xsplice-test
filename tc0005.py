@@ -13,5 +13,6 @@ class Testcase(xsplicetest._Testcase):
         self.load("exception")
         self.record_log()
         self.runcmd("xl debug-key h")
+        # requires a debug hv
         self.assert_log("traps.c.*GPF")
         self.assert_log("ret = -14")

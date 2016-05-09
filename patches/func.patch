@@ -1,9 +1,9 @@
 diff --git a/xen/common/keyhandler.c b/xen/common/keyhandler.c
-index 5d21e48..1f61b6c 100644
+index 4ff90f6..0ab2c32 100644
 --- a/xen/common/keyhandler.c
 +++ b/xen/common/keyhandler.c
-@@ -60,10 +60,24 @@ void register_keyhandler(unsigned char key, struct keyhandler *handler)
-     key_table[key] = handler;
+@@ -124,11 +124,27 @@ void register_irq_keyhandler(unsigned char key, irq_keyhandler_fn_t fn,
+     key_table[key].diagnostic = diagnostic;
  }
  
 +void noinline new_global_func(int argc)
@@ -18,17 +18,20 @@ index 5d21e48..1f61b6c 100644
 +
  static void show_handlers(unsigned char key)
  {
-     int i;
+     unsigned int i;
+ 
      printk("'%c' pressed -> showing installed handlers\n", key);
++
 +    printk("patching existing static\n");
 +    new_static_func(56);
 +    new_global_func(67);
 +    get_random();
-     for ( i = 0; i < ARRAY_SIZE(key_table); i++ ) 
-         if ( key_table[i] != NULL ) 
-             printk(" key '%c' (ascii '%02x') => %s\n", 
++
+     for ( i = 0; i < ARRAY_SIZE(key_table); i++ )
+         if ( key_table[i].fn )
+             printk(" key '%c' (ascii '%02x') => %s\n",
 diff --git a/xen/common/random.c b/xen/common/random.c
-index fb805b0..0d642ec 100644
+index fb805b0..8848c24 100644
 --- a/xen/common/random.c
 +++ b/xen/common/random.c
 @@ -8,6 +8,8 @@
@@ -44,7 +47,7 @@ index fb805b0..0d642ec 100644
  
      this_cpu(seed) = next;
  
-+    printk("patching %s\n", __func__);
++    printk("patching get_random\n");
 +    new_global_func(70);
 +
      return val;

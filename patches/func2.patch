@@ -1,8 +1,8 @@
 diff --git a/xen/common/keyhandler.c b/xen/common/keyhandler.c
-index 648588f..ddaf536 100644
+index 0ab2c32..3256c8c 100644
 --- a/xen/common/keyhandler.c
 +++ b/xen/common/keyhandler.c
-@@ -63,18 +63,20 @@ void register_keyhandler(unsigned char key, struct keyhandler *handler)
+@@ -127,11 +127,13 @@ void register_irq_keyhandler(unsigned char key, irq_keyhandler_fn_t fn,
  void noinline new_global_func(int argc)
  {
      printk("called new_global_func %d\n", argc);
@@ -16,24 +16,25 @@ index 648588f..ddaf536 100644
  }
  
  static void show_handlers(unsigned char key)
- {
-     int i;
+@@ -140,7 +142,7 @@ static void show_handlers(unsigned char key)
+ 
      printk("'%c' pressed -> showing installed handlers\n", key);
+ 
 -    printk("patching existing static\n");
 +    printk("repatching existing static\n");
      new_static_func(56);
      new_global_func(67);
      get_random();
 diff --git a/xen/common/random.c b/xen/common/random.c
-index 0d642ec..cf804ae 100644
+index 8848c24..48c4082 100644
 --- a/xen/common/random.c
 +++ b/xen/common/random.c
 @@ -31,7 +31,8 @@ unsigned int get_random(void)
      this_cpu(seed) = next;
  
-     printk("patching %s\n", __func__);
+     printk("patching get_random\n");
 -    new_global_func(70);
-+    printk("repatching %s\n", __func__);
++    printk("repatching get_random\n");
 +    new_global_func(43);
  
      return val;

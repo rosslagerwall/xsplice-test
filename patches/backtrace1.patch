@@ -1,9 +1,9 @@
 diff --git a/xen/common/keyhandler.c b/xen/common/keyhandler.c
-index 5d21e48..2b5ac00 100644
+index 4ff90f6..e4e79f4 100644
 --- a/xen/common/keyhandler.c
 +++ b/xen/common/keyhandler.c
-@@ -60,10 +60,21 @@ void register_keyhandler(unsigned char key, struct keyhandler *handler)
-     key_table[key] = handler;
+@@ -124,11 +124,24 @@ void register_irq_keyhandler(unsigned char key, irq_keyhandler_fn_t fn,
+     key_table[key].diagnostic = diagnostic;
  }
  
 +void new_global(void)
@@ -18,12 +18,15 @@ index 5d21e48..2b5ac00 100644
 +
  static void show_handlers(unsigned char key)
  {
-     int i;
+     unsigned int i;
+ 
      printk("'%c' pressed -> showing installed handlers\n", key);
++
 +    new_static();
-     for ( i = 0; i < ARRAY_SIZE(key_table); i++ ) 
-         if ( key_table[i] != NULL ) 
-             printk(" key '%c' (ascii '%02x') => %s\n", 
++
+     for ( i = 0; i < ARRAY_SIZE(key_table); i++ )
+         if ( key_table[i].fn )
+             printk(" key '%c' (ascii '%02x') => %s\n",
 diff --git a/xen/common/random.c b/xen/common/random.c
 index fb805b0..79ece82 100644
 --- a/xen/common/random.c

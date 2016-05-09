@@ -15,6 +15,7 @@ class Patch:
         options = options.split(',')
         self.ignore = 'ignore' in options
         self.reverse = 'reverse' in options
+        self.use_xenbuildid = 'xenbuildid' in options
 
 class _Testcase:
     def __init__(self, host, patches):
@@ -22,15 +23,16 @@ class _Testcase:
         self.patches = patches
 
         lines = self.runcmd_out("xl info")
-        for line in lines:
+        for line in lines.split("\n"):
             if line.startswith("build_id "):
                 self.xen_buildid = line.split(":")[1].strip()
 
-    def _build(self, patch):
+    def _build(self, patch, dep):
         shutil.rmtree(patch.outdir, ignore_errors=True)
         args = ['../xsplice-build/xsplice-build',
                 '--xen-debug',
                 #'--xen-syms', '../xen-syms',
+                '--depends', dep,
                 '-s', '../src',
                 '-p', patch.path,
                 '-o', patch.outdir]
@@ -55,6 +57,7 @@ class _Testcase:
     def build(self):
         print("===== BUILD =====")
 
+        dep = self.xen_buildid
         for patch in self.patches:
             if patch.reverse:
                 with open(patch.path, "r") as f:
@@ -62,7 +65,10 @@ class _Testcase:
                                           stdin=f,
                                           cwd='../src')
             elif not patch.ignore:
-                self._build(patch)
+                if patch.use_xenbuildid:
+                    dep = self.xen_buildid
+                self._build(patch, dep)
+                dep = patch.buildid
 
     def run(self):
         print("===== RUN =====")
@@ -114,15 +120,18 @@ class _Testcase:
         return subprocess.check_output(args, universal_newlines=True)
 
     def record_log(self):
-        lines = self.runcmd_out("xl dmesg")
+        #lines = self.runcmd_out("xl dmesg")
+        lines = self.runcmd_out("cat /var/log/xen/hypervisor.log")
         lines = [line.strip() for line in lines.split("\n") if line.strip()]
         self._mark = lines[-1].strip()
 
     def grep_log(self, s, record=True):
         marked = False
-        lines = self.runcmd_out("xl dmesg")
+        #lines = self.runcmd_out("xl dmesg")
+        lines = self.runcmd_out("cat /var/log/xen/hypervisor.log")
         lines = [line.strip() for line in lines.split("\n") if line.strip()]
 
+        #print("start")
         for line in lines:
             if line == self._mark:
                 marked = True
@@ -130,6 +139,7 @@ class _Testcase:
             if not marked:
                 continue
 
+            #print("NEW: %s" % line)
             if re.search(s, line):
                 if record:
                     self._mark = line
@@ -142,7 +152,7 @@ class _Testcase:
     def assert_log(self, s, record=True):
         assert self.grep_log(s, record)
 
-    def assert_not_log(self, s, record=True):
+    def assert_not_log(self, s, record=False):
         assert self.grep_log(s, record) is None
 
     def do_list(self):
@@ -173,7 +183,7 @@ class _Testcase:
             self.do_load(patch)
         else:
             self.do_upload(patch)
-            self.do_check(patch)
+            #self.do_check(patch)
             self.do_apply(patch)
             assert self.get_status(patch)[0] == 'APPLIED'
 
@@ -183,11 +193,11 @@ class _Testcase:
 
     def do_upload(self, patch):
         self.runcmd("xen-xsplice upload %s %s.xsplice" % (patch, patch))
-        assert self.get_status(patch)[0] == 'LOADED'
-
-    def do_check(self, patch):
-        self.runcmd("xen-xsplice check %s" % patch)
         assert self.get_status(patch)[0] == 'CHECKED'
+
+    #def do_check(self, patch):
+    #    self.runcmd("xen-xsplice check %s" % patch)
+    #    assert self.get_status(patch)[0] == 'CHECKED'
 
     def do_apply(self, patch):
         self.runcmd("xen-xsplice apply %s" % patch)
